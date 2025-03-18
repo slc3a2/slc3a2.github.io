@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>Linux中内存交换空间(swap)的使用</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2020/09/21/Linux%E4%B8%AD%E5%86%85%E5%AD%98%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4(Swap)%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8/">
+  
+  <meta name="description" content="什么是swapswap分区是Linux中特殊的一种存储，他在安装系统时被自动创建。   用于当内存不够时，操作系统会取出内存中不活跃或不常用的一部分放到swap分区中，使内存空闲出一部分空间用于执行其他程序。相当于临时充当一部分内存，当操作系统想要访问swap空间上的的数据时，swap会把数据放回内">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Linux中内存交换空间(swap)的使用" />
+  
+  <meta property="og:description" content="什么是swapswap分区是Linux中特殊的一种存储，他在安装系统时被自动创建。   用于当内存不够时，操作系统会取出内存中不活跃或不常用的一部分放到swap分区中，使内存空闲出一部分空间用于执行其他程序。相当于临时充当一部分内存，当操作系统想要访问swap空间上的的数据时，swap会把数据放回内">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2020/09/21/Linux%E4%B8%AD%E5%86%85%E5%AD%98%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4(Swap)%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Linux中内存交换空间(swap)的使用">
+  
+  <meta name="twitter:description" content="什么是swapswap分区是Linux中特殊的一种存储，他在安装系统时被自动创建。   用于当内存不够时，操作系统会取出内存中不活跃或不常用的一部分放到swap分区中，使内存空闲出一部分空间用于执行其他程序。相当于临时充当一部分内存，当操作系统想要访问swap空间上的的数据时，swap会把数据放回内">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2020/09/21/Linux%E4%B8%AD%E5%86%85%E5%AD%98%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4(Swap)%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>Linux中内存交换空间(swap)的使用</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="什么是swap"><a href="#什么是swap" class="headerlink" title="什么是swap"></a>什么是swap</h2><p><code>swap</code>分区是<code>Linux</code>中特殊的一种存储，他在安装系统时被自动创建。  </p>
+<p>用于当内存不够时，操作系统会取出内存中不活跃或不常用的一部分放到<code>swap</code>分区中，使内存空闲出一部分空间用于执行其他程序。相当于临时充当一部分内存，当操作系统想要访问<code>swap</code>空间上的的数据时，<code>swap</code>会把数据放回内存中供操作系统使用。</p>
+<p>类似<code>windows</code>中的虚拟内存。每个操作系统都有这种内存调度处理，当内存不够用，还想跑点东西，可以临时选择增加<code>swap</code>空间。以达到<code>实际使用内存</code>超过<code>物理内存</code>。由于<code>swap</code>的读取速度远不如内存，最好的办法还是<code>加物理内存</code>。</p>
+<h2 id="swap分区类型"><a href="#swap分区类型" class="headerlink" title="swap分区类型"></a>swap分区类型</h2><ul>
+<li><strong>swap 文件</strong></li>
+<li><strong>swap 分区</strong>  </li>
+</ul>
+<p>速度比较：物理内存 &gt; swap分区 &gt; swap文件。</p>
+<p>由于<code>swap</code>分区需要一个新的磁盘，当你的磁盘已经装了不少内容，不方便重新规划的话，也只好使用swap文件了。本文使用swap文件方式。</p>
+<h2 id="查看swap信息"><a href="#查看swap信息" class="headerlink" title="查看swap信息"></a>查看swap信息</h2><blockquote>
+<p>基于Cent OS 7.6 </p>
+</blockquote>
+<p> 使用<code>swapon -s</code>命令查看系统中当前<code>swap</code>信息：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">swapon -s
+
+Filename            Type        Size     Used        Priority
+&#x2F;swapfile           file        1048572  199668      -2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>Filename</strong>：swap 分区/文件所在的位置</li>
+<li><strong>Type</strong>：swap类型；<code>partition</code>为分区类型，<code>file</code>为文件类型</li>
+<li><strong>Size</strong>：总容量，单位是KB</li>
+<li><strong>Used</strong>：已被使用的容量</li>
+<li><strong>Priority</strong>：优先级，越高越优先被操作系统使用</li>
+</ul>
+<p>若查不到 swap 信息，使用<code>free -h</code>命令，查看内存使用情况：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">free -h
+              total        used        free      shared  buff&#x2F;cache   available
+Mem:           487M         65M        289M         44K        132M        398M
+Swap:          1.0G        259M        764M<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="操作swap"><a href="#操作swap" class="headerlink" title="操作swap"></a>操作swap</h2><p>创建<code>swap文件</code>， <code>fallocate</code>命令可以为文件预分配物理空间，和touch、vim的区别就是可瞬间创建超大的文件。快速创建的原因是通过分配块并将它们标记为未初始化，无需对数据块进行IO，可以快速完成预分配。当使用时再使用物理内存。<code>-l</code>后加大小，可以是k、m、g。再后面是保存位置和名称。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 创建一个1g文件swapfile保存到&#x2F;
+sudo fallocate -l 1G &#x2F;swapfile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>修改权限，仅允许文件所有者进行读写操作：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo chmod 600 &#x2F;swapfile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>将这个文件设为 Linux 交换区：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo mkswap &#x2F;swapfile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>激活交换区：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo swapon &#x2F;swapfile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>修改<code>/etc/fstab</code>，实现系统重启自动加载swap文件：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &#39;&#x2F;swapfile none swap sw 0 0&#39; | sudo tee -a &#x2F;etc&#x2F;fstab<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>至此完成swap文件增加。使用<code>free -h</code>查看 swap 使用情况：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">free -h
+              total        used        free      shared  buff&#x2F;cache   available
+Mem:           487M         65M        289M         44K        132M        398M
+Swap:          1.0G        259M        764M<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>停止所有swap：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo swapoff -a
+
+# 查看内存使用情况，可以看到 Swap 信息都变成0，说明操作成功了
+free -h
+              total        used        free      shared  buff&#x2F;cache   available
+Mem:           487M        261M         92M        484K        134M        201M
+Swap:     	      0           0           0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/Linux/" rel="tag">Linux</a>  -->
+  <!-- 2020年9月21日 -->
+  <a class="classtest-link" href="/tags/Linux/" rel="tag">Linux</a> · 2020年9月21日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>真睡后收入·GTX1660s以太坊挖矿小记</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/">
+  
+  <meta name="description" content="开始之前在大概2个月前，我在国内某论坛看到一个挖矿帖子，很感兴趣，家里也有一台用于娱乐的高配电脑，当天下班后我就开始搭建环境，几个小时后成功开始工作。有朋友问如何操作，也算总结下过程，所以写了这篇教程。 先说一下结果，当前以太坊eth币价为2057刀，折合人民币1.39w一个，24小时挖矿，我的电脑">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="真睡后收入·GTX1660s以太坊挖矿小记" />
+  
+  <meta property="og:description" content="开始之前在大概2个月前，我在国内某论坛看到一个挖矿帖子，很感兴趣，家里也有一台用于娱乐的高配电脑，当天下班后我就开始搭建环境，几个小时后成功开始工作。有朋友问如何操作，也算总结下过程，所以写了这篇教程。 先说一下结果，当前以太坊eth币价为2057刀，折合人民币1.39w一个，24小时挖矿，我的电脑">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="真睡后收入·GTX1660s以太坊挖矿小记">
+  
+  <meta name="twitter:description" content="开始之前在大概2个月前，我在国内某论坛看到一个挖矿帖子，很感兴趣，家里也有一台用于娱乐的高配电脑，当天下班后我就开始搭建环境，几个小时后成功开始工作。有朋友问如何操作，也算总结下过程，所以写了这篇教程。 先说一下结果，当前以太坊eth币价为2057刀，折合人民币1.39w一个，24小时挖矿，我的电脑">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>真睡后收入·GTX1660s以太坊挖矿小记</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="开始之前"><a href="#开始之前" class="headerlink" title="开始之前"></a>开始之前</h2><p>在大概2个月前，我在国内某论坛看到一个挖矿帖子，很感兴趣，家里也有一台用于娱乐的高配电脑，当天下班后我就开始搭建环境，几个小时后成功开始工作。有朋友问如何操作，也算总结下过程，所以写了这篇教程。</p>
+<p>先说一下结果，当前<code>以太坊eth</code>币价为<code>2057</code>刀，折合人民币<code>1.39w</code>一个，24小时挖矿，我的电脑可以产出<code>0.0016</code>个不计成本24小时持续挖矿收入为<code>22.24元</code>。</p>
+<p>再来算一下成本，显卡满载功率为125w， 挖矿时100%占用，cpu是<code>i5-9400f</code>，满载功率为<code>65w</code>，挖矿时，占用可以忽略不计，图中是我在跑着其他程序，其他主板，风扇，硬盘等功率假设为50w，可以得到整机在挖矿时，功率为175w，按照北京民电<code>0.4883/度</code>计算，24小时电费成本约为<code>2</code>元，不算其他线材损耗，一天净利润22-2=<code>20</code>元。</p>
+<p><img src="/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/YA4dIRbSgNVsvKE.png" alt="QQ20210405-0.png"></p>
+<h2 id="我的配置"><a href="#我的配置" class="headerlink" title="我的配置"></a>我的配置</h2><ul>
+<li><strong>显卡</strong>： 技嘉GeForce GTX 1660s(实测这款卡算力稳定在26mh/s左右)</li>
+<li><strong>操作系统</strong>： windows 10</li>
+<li><strong>挖矿软件</strong>： PhoenixMiner 5.5c</li>
+<li><strong>矿池</strong>： 火币矿币pro</li>
+<li><strong>钱包</strong>： 中心化火币钱包</li>
+</ul>
+<h2 id="选择矿池"><a href="#选择矿池" class="headerlink" title="选择矿池"></a>选择矿池</h2><blockquote>
+<p>先选择挖矿软件，主流挖矿软件有很多，只推荐几个开源项目，支持linux和windows的，不推荐轻松矿工等国产软件，抽水多，不适合单机挖矿</p>
+</blockquote>
+<ul>
+<li>claymore</li>
+<li>PhoenixMiner</li>
+<li>lolMiner</li>
+<li>Bminer</li>
+</ul>
+<p>我只使用过<code>PhoenixMiner</code>和<code>lolMiner</code>，这介绍这两款，下载<a target="_blank" rel="noopener" href="https://github.com/Lolliedieb/lolMiner-releases/releases">lolminer</a>和<a target="_blank" rel="noopener" href="https://phoenixminer.org/">PhoenixMiner</a>。  </p>
+<h2 id="获取矿池地址和钱包地址"><a href="#获取矿池地址和钱包地址" class="headerlink" title="获取矿池地址和钱包地址"></a>获取矿池地址和钱包地址</h2><ul>
+<li>矿池<br>我使用的火币矿池，地址<a target="_blank" rel="noopener" href="https://www.huobipool.com/">huobipool</a>  </li>
+</ul>
+<p> <code>火币矿池网站首页</code> =&gt; <code>导航选择pow挖矿</code> =&gt; <code>添加挖矿子账号</code></p>
+<p> 添加好之后就可以拿到挖矿地址，有测速选项，优先选择速度最快的节点作为矿池地址，来提升挖矿速度    </p>
+<ul>
+<li>钱包<br>我使用的火币  </li>
+</ul>
+<p> <code>进入火币app</code> =&gt; <code>导航资产</code> =&gt; <code>列表中找到ETH进入</code> =&gt; <code>充币</code> =&gt; <code>充币地址即钱包地址</code></p>
+<p>矿池地址和钱包地址，保存下来。除了货币矿池，还有很多其他的矿池，比如鱼池，蚂蚁矿池，可他们的提现门槛太高了，需要0.1个ETH才可以提现，最开始用鱼池挖了一周放弃了，0.1个ETH需要我的机器挖矿<code>62.5天</code>，周期太长了，所以我就选择了用火币矿池，搭配火币钱包，今日的产出会在每天下午3点自动提现到火币钱包，虽然提现手续费<code>2%</code>有点高，但这种方式适合我这样的散户。</p>
+<h2 id="开始挖矿"><a href="#开始挖矿" class="headerlink" title="开始挖矿"></a>开始挖矿</h2><ul>
+<li><em>PhoenixMiner</em><br> 下载完后，解压缩文件包，找到<code>start_miner.bat</code>,使用记事本或者vscode打开，删除所有内容，重新填入  </li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">REM
+REM Example bat file for starting PhoenixMiner.exe to mine ETH
+REM
+
+setx GPU_FORCE_64BIT_PTR 0
+setx GPU_MAX_HEAP_SIZE 100
+setx GPU_USE_SYNC_OBJECTS 1
+setx GPU_MAX_ALLOC_PERCENT 100
+setx GPU_SINGLE_ALLOC_PERCENT 100
+
+REM IMPORTANT: Replace the ETH address with your own ETH wallet address in the -wal option (Rig001 is the name of the rig)
+PhoenixMiner.exe -pool 矿池地址 -wal 以太坊钱包地址.矿工名称 -dagrestart 1 -rvram -1 -eres 0
+pause<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>把<code>矿池地址</code>和<code>以太坊钱包地址</code>替换，矿工名，可以随意填，英文+数字。替换好保存关闭。回到解压目录，打开PhoenixMiner.exe可执行程序，之后会打开一个终端窗口，就开始挖矿了，如果断网或者其他异常，程序会10s后自动重新连接，无需关心<br><img src="/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/grXvl26PoEtMFpa.png" alt="43264BBC6D73E4F446FE70FA11DB2A5D.png"></p>
+<ul>
+<li><p><em>lolMiner</em></p>
+<p>  设置也一样，下载解压缩，根目录下找到<code>mine_eth.bat</code>文件并编辑：</p>
+</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">@echo off
+
+setlocal enableDelayedExpansion
+
+Rem #################################
+Rem ## Begin of user-editable part ##
+Rem #################################
+
+set &quot;POOL&#x3D;矿池地址&quot;
+set &quot;WALLET&#x3D;以太坊钱包地址.矿工名&quot;										
+
+Rem #################################
+Rem ##  End of user-editable part  ##
+Rem #################################
+
+:loop
+lolMiner.exe --algo ETHASH --pool !POOL! --user !WALLET! --watchdog exit
+if %ERRORLEVEL% &#x3D;&#x3D; 42 (
+	timeout 10
+	goto loop
+)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>把<code>矿池地址</code>和<code>以太坊钱包地址</code>替换，矿工名，可以随意填，英文+数字。注意钱包地址和矿工名之间的英文句号，你也可以设置<code>timeout</code>右侧的遇到异常的重启时间，替换好保存关闭。回到解压目录，执行<code>miner_eth.bat</code>文件，打开命令行开始。</p>
+<h2 id="关于算力"><a href="#关于算力" class="headerlink" title="关于算力"></a>关于算力</h2><p>算力也叫哈希率(Hashrate)，是显卡计算能力的度量单位，即计算机计算哈希函数的输出速度。入门级挖矿显卡需要<strong>至少6G的显存</strong>，算力越高，你的收益越大，之间的关系不是线性的，应该是递减的关系。当然显卡价格也越贵，20年底，全球疫情来袭，比特币暴涨，导致显卡价格水涨船高，甚至涨了一倍。做矿老板有风险，用闲置机器赚一点零花钱还是很不错滴，俺也浪费国家电能了哈哈。另贴出主流a卡和n卡算力表，enjoy it。</p>
+<p>A卡：<br><img src="/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/ZD6ML8tjkGXdeWf.png" alt="WechatIMG4346.png"></p>
+<p>N卡：<img src="/2021/04/05/%E7%9C%9F%E7%9D%A1%E5%90%8E%E6%94%B6%E5%85%A5-%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%8C%96%E7%9F%BF%E6%95%99%E7%A8%8B/rhvAF538ynVWtlY.png" alt="WechatIMG4347.png"></p>
+
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/%E8%99%9A%E6%8B%9F%E8%B4%A7%E5%B8%81/" rel="tag">虚拟货币</a>  -->
+  <!-- 2021年4月5日 -->
+  <a class="classtest-link" href="/tags/%E8%99%9A%E6%8B%9F%E8%B4%A7%E5%B8%81/" rel="tag">虚拟货币</a> · 2021年4月5日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

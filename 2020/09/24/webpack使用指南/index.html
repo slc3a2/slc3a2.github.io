@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>webpack4的使用</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2020/09/24/webpack%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">
+  
+  <meta name="description" content="前言webpack 是我经常用的构建工具，并且 webpack 也逐渐成为主流前端构建工具，所以我觉得有必要透彻理解它，由于配置实现的写法有很多种，让人很头疼，一直没有仔细研究一下他的原理和实现方式。通过这篇文章，全面了解 webpack。   webpack简介 webpack 是一个开源的前端模">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="webpack4的使用" />
+  
+  <meta property="og:description" content="前言webpack 是我经常用的构建工具，并且 webpack 也逐渐成为主流前端构建工具，所以我觉得有必要透彻理解它，由于配置实现的写法有很多种，让人很头疼，一直没有仔细研究一下他的原理和实现方式。通过这篇文章，全面了解 webpack。   webpack简介 webpack 是一个开源的前端模">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2020/09/24/webpack%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="webpack4的使用">
+  
+  <meta name="twitter:description" content="前言webpack 是我经常用的构建工具，并且 webpack 也逐渐成为主流前端构建工具，所以我觉得有必要透彻理解它，由于配置实现的写法有很多种，让人很头疼，一直没有仔细研究一下他的原理和实现方式。通过这篇文章，全面了解 webpack。   webpack简介 webpack 是一个开源的前端模">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2020/09/24/webpack%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>webpack4的使用</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>webpack</strong> 是我经常用的构建工具，并且 <strong>webpack</strong> 也逐渐成为主流前端构建工具，所以我觉得有必要透彻理解它，由于配置实现的写法有很多种，让人很头疼，一直没有仔细研究一下他的原理和实现方式。通过这篇文章，全面了解 <strong>webpack</strong>。  </p>
+<h2 id="webpack简介"><a href="#webpack简介" class="headerlink" title="webpack简介"></a>webpack简介</h2><blockquote>
+<p><strong>webpack</strong> 是一个开源的前端模块构建工具，由德国开发者 <em>Tobias Koppers</em> 在2012年首发并开源。  </p>
+</blockquote>
+<p>由于近年来前端技术发展迅猛，越来越重视用户的操作体验，现在早已经不是那个 html、css、jQuery 一把梭的年代了。<br>越来越多的新思想、新框架孕育而生。这导致前端越来越重，需要 <strong>引入依赖</strong>、<strong>高级语法降级解析</strong>，<strong>Css预编译</strong>，<strong>使用更为严格的</strong><code>TypeScript</code><strong>避免问题</strong>， <strong>使用现代 mvvm 框架</strong><code>Vue</code>，<code>React</code><strong>快捷开发</strong>。最后 <strong>构建</strong> 成浏览器 <strong>可识别</strong> 的<code>.css</code> <code>.js</code>等基本文件再部署到生产环境，这其中构建一步就是<code>webpack</code>做的事情。 </p>
+<p><img src="/2020/09/24/webpack%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/EOzt1WTKBaXkgIr.png" alt="WechatIMG2925.png"></p>
+<h2 id="webpack基础使用"><a href="#webpack基础使用" class="headerlink" title="webpack基础使用"></a>webpack基础使用</h2><blockquote>
+<p>全局已安装 <a href="mailto:&#x77;&#101;&#x62;&#112;&#97;&#99;&#107;&#x40;&#52;&#46;&#52;&#x34;&#46;&#x32;">&#x77;&#101;&#x62;&#112;&#97;&#99;&#107;&#x40;&#52;&#46;&#52;&#x34;&#46;&#x32;</a> 和 <a href="mailto:&#110;&#x6f;&#100;&#x65;&#x6a;&#115;&#x40;&#x31;&#x30;&#46;&#49;&#x33;&#46;&#48;">&#110;&#x6f;&#100;&#x65;&#x6a;&#115;&#x40;&#x31;&#x30;&#46;&#49;&#x33;&#46;&#48;</a>  </p>
+</blockquote>
+<p>主要是两个配置：</p>
+<ul>
+<li><strong>entry</strong>：构建入口, <code>webpack</code>会从指定文件开始识别依赖模块关系并开始构建。<code>webpack4</code>中默认入口在<code>/src/index.js</code>。</li>
+<li><strong>output</strong>：构建出口，告诉<code>webpack</code>，构建完的文件放在哪里，叫什么名字，<code>webpack4</code>中默认出口在<code>/dist/main.js</code>。</li>
+</ul>
+<p>先来演示一下webpack最基本的操作。<br>新建文件夹，初始化项目<code>npm init</code> ，一路回车，生成<code>package.json</code>，在这个目录新建两个文件，<code>main.js</code>，<code>chunk.js</code> ，内容如下：  </p>
+<p>main.js   </p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> chunk <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./chunk.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>chunk<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>chunk.js</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token string">'I am chunk.js'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>创建好之后在项目下安装webpack：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">npm install <span class="token operator">--</span>save<span class="token operator">-</span>dev webpack webpack<span class="token operator">-</span>cli<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>执行第一个命令，<code>webpack 构建入口 --output 构建出口</code>： </p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ webpack ./main.js --output ./dist.js
+<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+Hash: 8cc82b2736e97001d58e
+Version: webpack <span class="token number">4.44</span>.2
+Time: 269ms
+Built at: <span class="token number">2020</span>-09-24 <span class="token number">16</span>:46:34
+  Asset        Size  Chunks             Chunk Names
+dist.js  <span class="token number">1000</span> bytes       <span class="token number">0</span>  <span class="token punctuation">[</span>emitted<span class="token punctuation">]</span>  main
+Entrypoint main <span class="token operator">=</span> dist.js
+<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> ./main.js <span class="token number">56</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span>
+<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> ./chunk.js <span class="token number">32</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上命令是把<code>main.js</code>使用<code>webpack</code>打包生成<code>dist.js</code>，由于<code>main.js</code>中引入<code>chunk.js</code>，所以<code>dist.js</code>是<code>main.js</code>和<code>chunk.js</code>的整合。  </p>
+<p>可以看到<code>webpack</code>输出一些打包信息后，并成功在<code>./</code>下创建<code>dist.js</code>，看看效果，创建一个<code>index.html</code>，并引入<code>dist.js</code></p>
+<p>当前目录结构:  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token builtin class-name">.</span>
+├── chunk.js 
+├── index.html
+├── main.js 
+├── package.json <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>打开<code>index.html</code>控制台面板可以看到向屏幕输出了「 I am chunk.js 」，看到这里，其实就可以理解<code>webpack</code>的作用了。都是在这个基础上，<strong>变形转换</strong>，<strong>以及打包过程中增加一些处理</strong>。这次简单演示使用终端打包，实际开发需要设置相当多的参数，命令不方便处理，会创建一个<code>webpack.conf.js</code>，专门来编写配置。  </p>
+<h2 id="webpack4的改变"><a href="#webpack4的改变" class="headerlink" title="webpack4的改变"></a>webpack4的改变</h2><ul>
+<li>速度相比3更快了(提升至少50%，没测过)</li>
+<li>默认配置出入口(就是网上说的0配置)</li>
+<li>增加了环境配置</li>
+</ul>
+<h4 id="默认配置出入口"><a href="#默认配置出入口" class="headerlink" title="默认配置出入口"></a>默认配置出入口</h4><blockquote>
+<p>这里需要说明一下，在webpack4中实现了默认配置，去除了老版本繁琐的配置，webpack真正的本领是构建，webpack官方也注意到了这一点，这是一个非常明智的改变。  </p>
+</blockquote>
+<p>版本3中需要用<code>entry</code>和<code>output</code>来指定构建入口和出口，在版本4中有默认配置。  </p>
+<ul>
+<li>默认入口在<code>/src/index.js</code></li>
+<li>默认出口在<code>/dist/main.js</code></li>
+</ul>
+<p>如果你想修改，可以在<code>package.json</code>修改script，例：  </p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">webpack ./entry/js/index.js --output ./output/js/main.js<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><code>webpack.conf.js</code>：  </p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 引入path为了实现相对路径转换成绝对路径：</span>
+path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'路径'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// entry为开始构建的文件入口</span>
+  entry<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'/src/index.js'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token comment">// output为构建后的文件出口，其中path为出口文件的路径，filename为出口文件名</span>
+  output<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    path<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'/dist'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    filename<span class="token operator">:</span> <span class="token string">'bundle.js'</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="增加了环境配置"><a href="#增加了环境配置" class="headerlink" title="增加了环境配置"></a>增加了环境配置</h4><p>4以前版本配置不同环境，根据<code>nodejs</code>环境变量需要编写两套配置：开发环境中配置<code>live reloading</code> 和<code>webpack-dev-server</code>；生产环境配置<code>sourceMap</code>和<code>uglifyJSPlugin</code>美化压缩代码。在4版本中只需要在<code>package.json</code>的中<code>script</code> 增加<code>--mode</code>参数指定环境，并自动处理上面不同环境区别：</p>
+<p>package.json：  </p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">"dev"</span><span class="token operator">:</span> <span class="token string">"webpack --mode development"</span><span class="token punctuation">,</span>
+  <span class="token property">"build"</span><span class="token operator">:</span> <span class="token string">"webpack --mode production "</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="webpack进阶使用"><a href="#webpack进阶使用" class="headerlink" title="webpack进阶使用"></a>webpack进阶使用</h2><p>主要是两个配置：</p>
+<ul>
+<li><p><strong>loader</strong>：<code>webpack</code>本身只能处理<code>.js</code>文件，安装不同的<code>loader</code>使其具备处理其他文件的能力，比如<code>.css</code>，<code>.scss</code>，<code>.vue</code>，<code>.jsx</code>，<code>.jade</code>。</p>
+</li>
+<li><p><strong>plugins</strong>：用于处理打包过程中一些更复杂的处理，比如<code>htmlwebpackplugin</code>自动生成<code>index.html</code>并引入构建文件，<code>uglifyJSPlugin</code>美化压缩代码。  </p>
+</li>
+</ul>
+<h4 id="Loader"><a href="#Loader" class="headerlink" title="Loader"></a>Loader</h4><p>在<code>/css/index.css</code>中创建<code>css</code>文件，并在<code>/src/index.js</code>引入，<code>css</code>经过<code>webpack</code>构建后会自动作用在<code>index.html</code>上。</p>
+<p><code>/src/index.css </code>： </p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">h1</span><span class="token punctuation">&#123;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span>red<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><code>/src/index.js</code>：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">import</span> indexCss <span class="token keyword">from</span> <span class="token string">'./index.css'</span><span class="token punctuation">;</span> <span class="token comment">// 或者 import './index.css';</span>
+
+<span class="token keyword">const</span> chunk <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'../chunk.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>chunk<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>执行<code>webpack</code>，可以看到报错了：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">ERROR <span class="token keyword">in</span> ./src/index.css <span class="token number">1</span>:4
+Module parse failed: Unexpected token <span class="token punctuation">(</span><span class="token number">1</span>:4<span class="token punctuation">)</span>
+You may need an appropriate loader to handle this <span class="token function">file</span> type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts<span class="token comment">#loaders</span>
+<span class="token operator">></span> html<span class="token punctuation">&#123;</span>
+<span class="token operator">|</span>   color:red<span class="token punctuation">;</span>
+<span class="token operator">|</span> <span class="token punctuation">&#125;</span>
+ @ ./src/index.js <span class="token number">1</span>:0-34<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>你需要安装对应<code>loader</code>去处理这个<code>css</code>文件，安装<code>style-loader</code>和<code>css-loader</code>： </p>
+<ul>
+<li><strong>css-loader</strong>：<code>webpack</code>默认只能处理<code>.js</code>和<code>.json</code>文件类型，这个包会使<code>webpack</code>具备处理<code>.css</code>的能力  </li>
+<li><strong>style-loader</strong>：<code>style-loader</code>会把<code>css-loader</code>构建好的<code>css</code>作为<code>&lt;style&gt;</code>标签插入到<code>html</code>中。</li>
+</ul>
+<p>安装他们：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">npm</span> <span class="token function">install</span> style-loader css-loader --save-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>配置他们：  </p>
+<blockquote>
+<p>需要注意：loader 的执行顺序是从后往前执行，本例先执行 css-loader 返回内容再交给 style-loader 执行。链式调用，一环套一环，每个 loader 负责单一指责，方便扩展。</p>
+</blockquote>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  module<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    rules<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">&#123;</span> 
+      test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.css$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> 
+      use<span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span> 
+          loader<span class="token operator">:</span> <span class="token string">"style-loader"</span><span class="token punctuation">,</span>
+          options<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// options</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span> 
+          loader<span class="token operator">:</span> <span class="token string">"css-loader"</span> <span class="token punctuation">,</span>
+          options<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// options</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>test</strong>：匹配 loaders 所处理文件的拓展名的正则表达式（必填）</li>
+<li><strong>loader</strong>：loader 的名称（必填）</li>
+<li><strong>include/exclude</strong>：需要处理的文件夹或屏蔽不需要处理的文件夹（选填）；</li>
+<li><strong>options</strong>：为 loaders 提供额外的设置选项（选填）</li>
+</ul>
+<p>详细options：<br><a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/npm/package/style-loader">style-loader</a><br><a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/npm/package/css-loader">css-loader</a></p>
+<p>重新构建：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">➜  webpack-demo webpack
+Hash: c741b4496ab2094ee570
+Version: webpack <span class="token number">4.44</span>.2
+Time: 270ms
+Built at: <span class="token number">2020</span>-09-30 <span class="token number">17</span>:22:42
+  Asset     Size  Chunks             Chunk Names
+main.js  <span class="token number">4.7</span> KiB       <span class="token number">0</span>  <span class="token punctuation">[</span>emitted<span class="token punctuation">]</span>  main
+Entrypoint main <span class="token operator">=</span> main.js
+<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> ./src/index.js <span class="token number">79</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span>
+<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> ./src/index.css <span class="token number">529</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span>
+<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span> ./node_modules/css-loader/dist/cjs.js??ref--4-1<span class="token operator">!</span>./src/index.css <span class="token number">301</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span>
+<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> ./chunk.js <span class="token number">32</span> bytes <span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">&#125;</span> <span class="token punctuation">[</span>built<span class="token punctuation">]</span>
+    + <span class="token number">2</span> hidden modules<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>构建成功了，<br>修改<code>index.html</code>引入构建后的文件，并打开，可以看到一个红色标题，loader配置生效了  </p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>viewport<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>width=device-width, initial-scale=1.0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Document<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>标题<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>./dist/main.js<span class="token punctuation">'</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="Plugin"><a href="#Plugin" class="headerlink" title="Plugin"></a>Plugin</h3><p>使用<code>html-webpack-plugin</code>和<code>clean-webpack-plugin</code>举例：  </p>
+<ul>
+<li><strong>html-webpack-plugin</strong>：构建时，在output目录下创建一个index.html文件，并把构建后的文件插入到html中。</li>
+<li><strong>clean-webpack-plugin</strong>：每次打包前自动清空output文件夹。  </li>
+</ul>
+<h4 id="html-webpack-plugin"><a href="#html-webpack-plugin" class="headerlink" title="html-webpack-plugin"></a>html-webpack-plugin</h4><p>安装：  </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">npm</span> <span class="token function">install</span> html-webpack-plugin --save-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><code>webpack.config.js</code>配置：  </p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  module<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//...</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  plugins<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/npm/package/html-webpack-plugin">html-webpack-plugin更多参数</a></p>
+<h4 id="clean-webpack-plugin"><a href="#clean-webpack-plugin" class="headerlink" title="clean-webpack-plugin"></a>clean-webpack-plugin</h4><p>安装： </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">npm</span> <span class="token function">install</span> clean-webpack-plugin --save-dev <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><code>webpack.config.js</code>配置：   </p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> CleanWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'clean-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  module<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//...</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  plugins<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'dist'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/npm/package/clean-webpack-plugin">clean-webpack-plugin更多参数</a> </p>
+<p>复杂的<code>plugins</code>配置：  </p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">plugins<span class="token operator">:</span> <span class="token punctuation">[</span>  
+	 <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+     <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'dist'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><code>plugins</code>为一个数组，每一项都是一个插件，插件的配置都是作为参数传入，有数组也有对象类型，<code>plugin</code>不像<code>loader</code>有很明确的顺序，它类似事件绑定，按需执行。</p>
+
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a>  -->
+  <!-- 2020年9月24日 -->
+  <a class="classtest-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a> · 2020年9月24日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

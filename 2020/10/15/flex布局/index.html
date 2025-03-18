@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>flex布局介绍</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2020/10/15/flex%E5%B8%83%E5%B1%80/">
+  
+  <meta name="description" content="flex布局概念 flex布局通常被叫做flex box，也叫弹性盒子或容器，是一种一维的布局模型，它能子元素(flex item)之间提供了强大的空间分布和对齐能力。          flex容器中存在两个轴，一个水平方向main axis，一个竖直方向cross axis，这是flex布局最重">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="flex布局介绍" />
+  
+  <meta property="og:description" content="flex布局概念 flex布局通常被叫做flex box，也叫弹性盒子或容器，是一种一维的布局模型，它能子元素(flex item)之间提供了强大的空间分布和对齐能力。          flex容器中存在两个轴，一个水平方向main axis，一个竖直方向cross axis，这是flex布局最重">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2020/10/15/flex%E5%B8%83%E5%B1%80/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="flex布局介绍">
+  
+  <meta name="twitter:description" content="flex布局概念 flex布局通常被叫做flex box，也叫弹性盒子或容器，是一种一维的布局模型，它能子元素(flex item)之间提供了强大的空间分布和对齐能力。          flex容器中存在两个轴，一个水平方向main axis，一个竖直方向cross axis，这是flex布局最重">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2020/10/15/flex%E5%B8%83%E5%B1%80/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>flex布局介绍</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="flex布局概念"><a href="#flex布局概念" class="headerlink" title="flex布局概念"></a>flex布局概念</h2><blockquote>
+<p><code>flex</code>布局通常被叫做<code>flex box</code>，也叫<code>弹性盒子</code>或<code>容器</code>，是一种一维的<code>布局模型</code>，它能子元素(<code>flex item</code>)之间提供了强大的空间分布和对齐能力。   </p>
+</blockquote>
+<p><img src="/2020/10/15/flex%E5%B8%83%E5%B1%80/WBQ8RSuH7norCs4.png" alt="v2-54a0fc96ef4f455aefb8ee4bc133291b_720w.png">    </p>
+<p><code>flex容器</code>中存在两个轴，一个<code>水平方向</code>main axis，一个<code>竖直方向</code>cross axis，这是<code>flex</code>布局最重要的点，内部元素<code>flex item</code>都是根据这个轴来排列对齐的。  </p>
+<h2 id="flex布局好处"><a href="#flex布局好处" class="headerlink" title="flex布局好处"></a>flex布局好处</h2><p>在一个<code>html元素</code>和内部<code>多个子元</code>的组合中。要实现子元素有序的，高度自定义的布局，在传统布局方式中，会使用<code>position</code>，<code>float</code>方式实现，比如多个子元素在父元素中<code>垂直水平居中</code>，比较困难。这个时候就可以用<code>flex</code>布局，只需要简单几句代码就可以优雅的实现。    </p>
+<h2 id="flex容器属性"><a href="#flex容器属性" class="headerlink" title="flex容器属性"></a>flex容器属性</h2><blockquote>
+<p>设置一个盒子为<code>flex</code>容器，首先设置<code>display: flex</code>;  </p>
+</blockquote>
+<ul>
+<li><strong>flex-direction</strong></li>
+<li><strong>flex-wrap</strong></li>
+<li><strong>justify-content</strong></li>
+<li><strong>align-items</strong></li>
+<li><strong>align-content</strong>  </li>
+</ul>
+<h3 id="flex-direction"><a href="#flex-direction" class="headerlink" title="flex-direction"></a>flex-direction</h3><p><code>flex-direction</code>属性规定所有<code>flex item</code>在<code>flex</code>容器从 <strong>第一个元素</strong> 开始的排列方式</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">flex-direction</span><span class="token punctuation">:</span> <span class="token function">row</span><span class="token punctuation">(</span>默认<span class="token punctuation">)</span> | row-reverse | column | column-reverse<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>row</strong>： 从左往右水平展示<br><strong>row-reverse</strong>： 从右向左(反向)水平展示<br><strong>column</strong>： 从上往下垂直展示<br><strong>column-reverse</strong>： 从下往上(反向)垂直展示</p>
+<h3 id="flex-wrap"><a href="#flex-wrap" class="headerlink" title="flex-wrap"></a>flex-wrap</h3><p><code>flex-wrap</code>属性规定<code>flex</code>容器内所有<code>flex item</code>总宽度超出<code>flex</code>容器时换行方式    </p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">flex-wrap</span><span class="token punctuation">:</span> <span class="token function">nowrap</span><span class="token punctuation">(</span>默认<span class="token punctuation">)</span> | wrap | wrap-reverse<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>nowrap</strong>： 不换行，只展示一行。如果容器不够宽，平均缩小每个<code>item</code>的宽度<br><strong>wrap</strong>： 换行，向下换行<br><strong>wrap-reverse</strong>： 以相反方向换行，向上换行</p>
+<h3 id="justify-content"><a href="#justify-content" class="headerlink" title="justify-content"></a>justify-content</h3><p><code>justify-content</code>属性规定所有<code>flex item</code>作为一个整体在<code>flex</code>容器在主轴(默认为水平轴，通过<code>flex-direcation</code>设置)上的排列方式</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">justify-content</span><span class="token punctuation">:</span> <span class="token function">flex-start</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | flex-end | center | space-between | space-around<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>flex-start</strong>： 整体位于容器开头<br><strong>flex-end</strong>： 整体位于容器结尾<br><strong>center</strong>： 整体位于容器中心<br><strong>space-between</strong>： 每个<code>flex item</code>平均分布在容器内； <code>第一个item</code>和<code>容器开头</code>，<code>最后一个item</code>和<code>容器结尾</code>都无间距<br><strong>space-around</strong>： 每个<code>flex item</code>平均分布在容器内， <code>第一个item</code>和<code>容器开头</code>，<code>最后一个item</code>和<code>容器结尾</code>的间距都为<code>每个item</code>间距的一半    </p>
+<h3 id="align-items"><a href="#align-items" class="headerlink" title="align-items"></a>align-items</h3><p><code>align-items</code>属性规定所有<code>flex item</code>作为一个整体在<code>flex</code>容器在副轴(非主轴，和<code>justify-content</code>相反)上的排列方式</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">align-items</span><span class="token punctuation">:</span> <span class="token function">stretch</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | center | flex-start | flex-end | baseline<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>stretch</strong>： 整体占满整个主轴的高度, 前提必须是你没有设置item的高度(宽度)，否则不生效<br><strong>center</strong>： 整体位于主轴中心<br><strong>flex-start</strong>： 整体位于主轴开头<br><strong>flex-end</strong>： 整体位于主轴结尾<br><strong>baseline</strong>： 主轴位于<code>item</code>中第一行文字 <em>基线</em> 对齐    </p>
+<blockquote>
+<p>基线的概念：英文中大概就是一个小写字母 <em>x</em> 的最底部，<em>f</em> 的中下部；而中文大概就汉字中下部，不太准确，我没深入了解，有兴趣可以网上了解。</p>
+</blockquote>
+<h3 id="align-content"><a href="#align-content" class="headerlink" title="align-content"></a>align-content</h3><p><code>align-content</code>属性规定了多条主轴的情况下(只有<code>item</code>换行了，才会产生多条主轴)，这些主轴作为一个整体在他们的排列方向中的排列方式；注意：只有一条主轴(<code>item</code>不换行)不生效</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">align-content</span><span class="token punctuation">:</span> <span class="token function">stretch</span><span class="token punctuation">(</span>默认<span class="token punctuation">)</span> | center | flex-start | flex-end | space-between | space-around<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>stretch</strong>： 整体被拉伸以适应容器<br><strong>center</strong>： 整体内各个轴紧靠，并且位于容器中心，头尾留白<br><strong>flex-start</strong>： 整体内各个轴紧靠，并且位于容器头部<br><strong>flex-end</strong>： 整体内各个轴紧靠，并且位于容器尾部<br><strong>space-between</strong>： 整体平分，其中头尾和容器头尾紧靠，中间间隙平分<br><strong>space-around</strong>：  整体平分，其中头尾和容器头尾距离为中间item的空隙的一半，中间间隙平分 </p>
+<h2 id="flex-item属性"><a href="#flex-item属性" class="headerlink" title="flex item属性"></a>flex item属性</h2><ul>
+<li>order</li>
+<li>flex-basis</li>
+<li>flex-grow</li>
+<li>flex-shrink</li>
+<li>align-self  </li>
+</ul>
+<h3 id="order"><a href="#order" class="headerlink" title="order"></a>order</h3><p><code>order </code>属性规定了当前<code>flex item</code>排列前后顺序，越小排列越靠前，可以为负数</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">order</span><span class="token punctuation">:</span> <span class="token function">0</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | &lt;number>  <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="flex-basis"><a href="#flex-basis" class="headerlink" title="flex-basis"></a>flex-basis</h3><p><code>flex-basis </code>属性规定了当前<code>flex item</code>的高度(主轴为水平轴则是高度，如果主轴为竖直轴则是宽度，主轴通过<code>flex-direction</code>设置)的伸缩比例或大小</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">flex-basis</span><span class="token punctuation">:</span> <span class="token function">auto</span><span class="token punctuation">(</span>默认<span class="token punctuation">)</span> | number<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>number</strong>： 可以是具体的像素值，如30px；也可以是auto大小百分比</p>
+<h3 id="flex-grow"><a href="#flex-grow" class="headerlink" title="flex-grow"></a>flex-grow</h3><p><code>flex-grow</code>属性 前提在所有项目以<code>flex-basis</code>的值排列完如有剩余空间，则规定当前<code>flex item</code>的高度(主轴为水平轴则是高度，如果主轴为竖直轴则是宽度，主轴通过<code>flex-direction</code>设置)的剩余空间份比例  </p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">flex-grow</span><span class="token punctuation">:</span> <span class="token function">0</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | &lt;number><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>number</strong>：当剩余空间足够时，如果值为<code>1</code>那么高度(宽度)<code>放大剩余空间1份</code>，如果只有一个元素设置了此属性，那么剩余全部全部分给他；如果多个元素设置了此属性，比如<code>a:1</code> <code>b:2</code> <code>c:3</code>则会把剩余空间分成<code>6份</code>，a在本身的大小基础上增加剩余空间的<code>1/6份</code> a则是<code>2/6份</code> c则是<code>3/6份</code>，如果剩余空间不足，则取<code>剩余空间最大值</code>，不支持负数</p>
+<h3 id="flex-shrink"><a href="#flex-shrink" class="headerlink" title="flex-shrink"></a>flex-shrink</h3><p><code>flex-shrink</code>属性规定了当剩余空间不足时候，当前<code>flex item</code>的高度(主轴为水平轴则是高度，如果主轴为竖直轴则是宽度，主轴通过<code>flex-direction</code>设置)的缩小超出空间份比例，和上面的<code>flex-grow</code>是相反的，一个放大，一个缩小</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">flex-shrink</span><span class="token punctuation">:</span> <span class="token function">1</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | &lt;number><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>number</strong>：当剩余空间不足时，默认按照比例1缩小，如果值为<code>2</code>那么高度(宽度)<code>缩小超出空间2份</code></p>
+<h3 id="align-self"><a href="#align-self" class="headerlink" title="align-self"></a>align-self</h3><p><code>flex-shrink</code>属性规定当前<code>flex item</code>作为一个整体在<code>flex</code>容器在副轴(非主轴，和<code>justify-content</code>相反)上的排列方式    </p>
+<blockquote>
+<p>注意：这个属性和<code>align-item</code>的区别是<code>align-item</code>影响全部<code>flex item</code>，而<code>align-self</code>只影响当前<code>flex item</code>  </p>
+</blockquote>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token property">align-self</span><span class="token punctuation">:</span> <span class="token function">auto</span><span class="token punctuation">(</span>默认值<span class="token punctuation">)</span> | stretch | center | flex-start | flex-end | baseline<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>auto</strong>：继承父亲<code>align-item</code>的<code>value</code><br><strong>stretch</strong>： 占满整个主轴的高度, 前提必须是你没有设置item的高度(宽度)，否则不生效<br><strong>center</strong>： 位于主轴中心<br><strong>flex-start</strong>： 位于主轴开头<br><strong>flex-end</strong>： 位于主轴结尾<br><strong>baseline</strong>： 位于<code>item</code>中第一行文字 <em>基线</em> 对齐  </p>
+<h2 id="扩展一道面试题"><a href="#扩展一道面试题" class="headerlink" title="扩展一道面试题"></a>扩展一道面试题</h2><h4 id="一个元素包含内部两个元素。当flex水平轴为主轴，实现左固定，右自适应："><a href="#一个元素包含内部两个元素。当flex水平轴为主轴，实现左固定，右自适应：" class="headerlink" title="一个元素包含内部两个元素。当flex水平轴为主轴，实现左固定，右自适应："></a>一个元素包含内部两个元素。当flex水平轴为主轴，实现左固定，右自适应：</h4><pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>flex2<span class="token punctuation">'</span></span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">div.flex2</span><span class="token punctuation">&#123;</span>
+	<span class="token property">display</span><span class="token punctuation">:</span>flex<span class="token punctuation">;</span>
+	<span class="token property">border</span><span class="token punctuation">:</span>1px solid red<span class="token punctuation">;</span>
+	<span class="token property">width</span><span class="token punctuation">:</span>100%<span class="token punctuation">;</span>
+	<span class="token property">height</span><span class="token punctuation">:</span>300px<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token selector">.flex2 p</span><span class="token punctuation">&#123;</span>
+	<span class="token property">width</span><span class="token punctuation">:</span>100px<span class="token punctuation">;</span>
+	<span class="token property">height</span><span class="token punctuation">:</span>100px<span class="token punctuation">;</span>
+	<span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+	<span class="token property">line-height</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+	<span class="token property">text-align</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+	<span class="token property">font-size</span><span class="token punctuation">:</span> 80px<span class="token punctuation">;</span>
+	<span class="token property">border</span><span class="token punctuation">:</span>1px solid blue<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token selector">.flex2 p:nth-child(1)</span><span class="token punctuation">&#123;</span>
+	<span class="token property">width</span><span class="token punctuation">:</span>200px<span class="token punctuation">;</span>// 左侧元素固定为200px宽
+<span class="token punctuation">&#125;</span>
+<span class="token selector">.flex2 p:nth-child(2)</span><span class="token punctuation">&#123;</span>
+	<span class="token property">flex-grow</span><span class="token punctuation">:</span>1<span class="token punctuation">;</span> // 右侧元素自适应
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/css/" rel="tag">css</a>  -->
+  <!-- 2020年10月15日 -->
+  <a class="classtest-link" href="/tags/css/" rel="tag">css</a> · 2020年10月15日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

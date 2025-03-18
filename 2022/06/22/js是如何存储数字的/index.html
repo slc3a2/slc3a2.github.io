@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>js是如何存储数字的</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/">
+  
+  <meta name="description" content="为什么要写这篇博客最近在和同事午饭的时候聊到这个问题。想到了刚接触编程时粗略了解过，但是又没办法讲清楚，所以决定利用这篇博客复习一下。也希望给相关的二进制存储的疑问画上一个句号。 先来了解存储数字的标准计算机是二进制的。浮点数是没有办法用二进制进行精确表示。我们的 CPU 表示浮点数由两个部分组成：">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="js是如何存储数字的" />
+  
+  <meta property="og:description" content="为什么要写这篇博客最近在和同事午饭的时候聊到这个问题。想到了刚接触编程时粗略了解过，但是又没办法讲清楚，所以决定利用这篇博客复习一下。也希望给相关的二进制存储的疑问画上一个句号。 先来了解存储数字的标准计算机是二进制的。浮点数是没有办法用二进制进行精确表示。我们的 CPU 表示浮点数由两个部分组成：">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="js是如何存储数字的">
+  
+  <meta name="twitter:description" content="为什么要写这篇博客最近在和同事午饭的时候聊到这个问题。想到了刚接触编程时粗略了解过，但是又没办法讲清楚，所以决定利用这篇博客复习一下。也希望给相关的二进制存储的疑问画上一个句号。 先来了解存储数字的标准计算机是二进制的。浮点数是没有办法用二进制进行精确表示。我们的 CPU 表示浮点数由两个部分组成：">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>js是如何存储数字的</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="为什么要写这篇博客"><a href="#为什么要写这篇博客" class="headerlink" title="为什么要写这篇博客"></a>为什么要写这篇博客</h2><p>最近在和同事午饭的时候聊到这个问题。想到了刚接触编程时粗略了解过，但是又没办法讲清楚，所以决定利用这篇博客复习一下。也希望给相关的二进制存储的疑问画上一个句号。</p>
+<h2 id="先来了解存储数字的标准"><a href="#先来了解存储数字的标准" class="headerlink" title="先来了解存储数字的标准"></a>先来了解存储数字的标准</h2><p>计算机是二进制的。浮点数是没有办法用二进制进行精确表示。我们的 CPU 表示浮点数由两个部分组成：<strong>指数</strong> 和 <strong>尾数</strong>，这样的表示方法一般会失去一定的精确度，有些浮点数运算也会产生一定的误差，是实数的无限精度跟计算机的有限内存之间的矛盾，通用语言中的浮点数都是按照 <strong>二进位浮点数算术标准</strong> (IEEE 754)标准存储。</p>
+<p>一般语言把数字区分整数型和小数型以不同标准存储，但是 <code>js</code> 比较特殊，在 <code>js</code> 中，不管是整数还是小数都是以 IEEE 754 标准中的 <strong>双精度浮点法</strong> (Double 64)存储的。整数 <code>1</code> 被当成 <code>1.0</code> 存储。</p>
+<h2 id="那什么是双精度浮点法"><a href="#那什么是双精度浮点法" class="headerlink" title="那什么是双精度浮点法 ?"></a>那什么是双精度浮点法 ?</h2><p>先来介绍一下 <strong>双精度浮点法</strong>，比起 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%96%AE%E7%B2%BE%E5%BA%A6%E6%B5%AE%E9%BB%9E%E6%95%B8">单精度浮点法</a>，<strong>双精度浮点法</strong> 使用 <code>64</code> 位二进制来储存一个浮点数。它可以表示二进位制的 <code>53</code> 位有效数字，其可以表示的数字的范围为</p>
+<p>$$<br>[-(2^{53}),  2^{53} - 1]<br>$$</p>
+<p>结构包含 <code>64</code> 位二进制位，分别是<strong>符号位</strong>，<strong>指数位</strong>，<strong>尾数位</strong>。</p>
+<ul>
+<li>sign bit（符号）：用来表示数值正负，<code>0</code> 代表数值为正，<code>1</code> 代表数值为负。占位 <code>1</code> 比特。</li>
+<li>exponent（指数）：用来表示次方数，占位越多，可以表示数字的范围越大。可以理解成它表示 <strong>小数点</strong> 在数字的什么位置上，这也是小数在计算机中被叫做浮点数的原因。占位 <code>11</code> 比特。</li>
+<li>mantissa（尾数）：用来表示精确度，可以理解成占位越多，那么保存小数点后更多的位数。占位 <code>52</code> 比特。</li>
+</ul>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/7/76/General_double_precision_float.png" alt="General double precision float.png"></p>
+<h2 id="二进制转换"><a href="#二进制转换" class="headerlink" title="二进制转换"></a>二进制转换</h2><p>那么把一个数字存入到内存中是如何实现的呢？首先先把数字转换计算机可识别二进制格式再通过 <strong>双精度浮点法</strong> 存储，这里区分两种情况：整数和小数(整数部分和小数部分)</p>
+<ul>
+<li><p>整数：整数除以 <code>2</code>，记录结果和余数。然后用上次结果继续除以 <code>2</code>，再次记录商和余数。重复这个步骤，直到商为 <code>0</code> 为止。那么所得余数从后往前排列就是这个整数的二进制。</p>
+</li>
+<li><p>小数：小数位乘以 <code>2</code>，记录结果，区分整数位和小数位，然后继续用小数位乘以 <code> 2</code>，再次记录结果。重复这个步骤，直到小数位为 <code>0</code> 为止，那么其中得到的整数结果从前往后排列就是小数的二进制。</p>
+</li>
+</ul>
+<h4 id="整数-8-转换二进制过程"><a href="#整数-8-转换二进制过程" class="headerlink" title="整数 8 转换二进制过程"></a>整数 8 转换二进制过程</h4><pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token number">8</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">4</span> <span class="token comment">// 余数 0</span>
+<span class="token number">4</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">2</span> <span class="token comment">// 余数 0</span>
+<span class="token number">2</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">1</span> <span class="token comment">// 余数 0</span>
+<span class="token number">1</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token comment">// 余数 1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后把倒过来把余数排列，<code>1000</code> 就是 8 的二进制结果。</p>
+<h4 id="小数-0-25-转换二进制过程"><a href="#小数-0-25-转换二进制过程" class="headerlink" title="小数 0.25 转换二进制过程"></a>小数 0.25 转换二进制过程</h4><pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token number">0.25</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">0.5</span> <span class="token comment">// 整数位：0 小数位：0.5</span>
+<span class="token number">0.5</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">=</span> <span class="token number">1</span>    <span class="token comment">// 整数位：1 小数位：0</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>整数位结果从前往后取出得到 <code>01</code> 就是 0.25 的二进制结果。</p>
+<h4 id="8-25-的二进制过程"><a href="#8-25-的二进制过程" class="headerlink" title="8.25 的二进制过程"></a>8.25 的二进制过程</h4><p>实际拆解成整数位 <code>8</code> 和小数 <code>0.25</code>，分别按照对应的方法去转换，<code>8</code> 的二进制就是 <code> 1000</code>，<code>0.25</code> 的二进制是 <code>01</code>，加个小数点合并到一起就是 <code>1000.01</code>，所以 <code>8.25</code> 的二进制为 <code>1000.01</code>。</p>
+<h2 id="以双精度浮点法存储到内存"><a href="#以双精度浮点法存储到内存" class="headerlink" title="以双精度浮点法存储到内存"></a>以双精度浮点法存储到内存</h2><p>按照上述步骤，<code>8.25</code> 转换二进制得到 <code>1000.01</code>，那么 <code>1000.01</code> 是如何以双精度浮点法存储的呢，第一步先用二进制科学记数法表示，得到 <code>1.00001</code> * <code>2^3</code>，然后我们把它拆分下，分别存入符号位，指数位，尾数位。</p>
+<ul>
+<li>符号位存入 <code> 0</code>，因为 <code> 1000.01</code> 是正数</li>
+<li>指数位存入 1026 的二进制 <code> 10000000010</code>，指数应该是 <code>3</code>，为什么存入 <code> 1026</code> ? 参考下面标题为 <em>为什么指数位要设置偏移量 ?</em></li>
+<li>尾数位存入 <code> 00001</code>，把 <code>1.0001</code> 小数点前的 <code>1</code> 省略，因为转换为二进制位后，只可能是 0 和 1，再进行二进制科学记数法，第一位一定大于 0，所以又排除了 0，所以小数点前的数只能是 1，就可以省略掉</li>
+</ul>
+<p>至此使用双精度浮点法 <code>8.25</code> 存储的结果为：<br><img src="/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/f57192d6-0ec2-4ae9-af18-5c8393ad2ee1.png" alt="8.25 double 64 expamle"></p>
+<h2 id="为什么指数位要设置偏移量"><a href="#为什么指数位要设置偏移量" class="headerlink" title="为什么指数位要设置偏移量 ?"></a>为什么指数位要设置偏移量 ?</h2><p>这里需要解释下，按照上面的例子，指数应该是 <code>3</code>，为什么存入 <code> 1026</code> ?</p>
+<p>是因为指数位有 <code>11</code> 位，可以表示 <code> 0 ~ 2^11</code>，也就是 <code> 0 ~ 2048</code>， 因为指数可能 <strong>正</strong> 或 <strong>负</strong> 的，这种情况下计算机不仅仅要识别指数有多大，还需要识别是正是否，无疑增加了复杂度。</p>
+<p>为了简化这个问题，指数位只存储无符号整数，所以使用了偏移量的概念，因为指数有正负， <code>0 ~ 2048</code> 没办法表示负数，就把 <code>0 ~ 2048</code> 从中一刀切开，范围变成 <code>-1024</code> 到 <code>+1024</code>， 对了，其中还包括 <code>0</code> ，就是 <code>-1024</code> 到 <code>+1023</code> 。存储的时候让原本的指数不管正负都加上<code>1024 </code>的偏移量，可以保证，存储的都是整数，当二进制转回十进制的时候，再减去 1024 就可以了，那 1024 + 3 应该是 1027 啊，为什么实际用了 1026 呢，因为人们为了特殊用处，不允许使用 <code>0</code> 和 <code>1023</code> 这两个数字表示指数，因为这两个极值，来表示一些特别的含义，比如 NaN，Infinity，0 等。这样的话少了 2 个数字，偏移量的设置自然就只好采用最大值 <code>1023</code> 了。因为<code>-1023 + 1023 = 0</code>，最小的指数为<code>0</code>，所以指数位 <code> 3 + 1023</code> 为 <code> 1026</code> 。这就是移码的概念。<code>IEEE 754</code> 的指数位采用移码来表示，为了实现表示的范围都是正数，而小数部分用原码来表示。</p>
+<h2 id="从内存中如何取出使用呢？"><a href="#从内存中如何取出使用呢？" class="headerlink" title="从内存中如何取出使用呢？"></a>从内存中如何取出使用呢？</h2><p>按照 <strong>双精度浮点法</strong> 存入内存的数字如何拿出来使用呢？先看转换公式：</p>
+<p>$$<br>(-1)^{sign} \times 2^{exponent}  \times  (1 + mantissa)<br>$$</p>
+<p>还是用 <code> 8.25</code> 举例，符号位为 <code>0</code>，指数位为 1026 - 1023 (偏移量) = 3，尾数为 <code>00001</code>，可得：</p>
+<p>$$<br>(-1)^{0} \times 2^{3}  \times  (1 + 0.00001) = 1   \times  1000.01<br>$$</p>
+<p>把二进制结果 <code>1000.01</code> 转换为十进制，先把小数位按照<strong>第 1 位的值*2^(-1)<strong>，</strong>第 2 位的值*2^(-2)<strong>，</strong>第 3 位的值*2^(-3)</strong> …到最后一项 **第 n 位的值*2^(-n)**，然后把最后结果相加，因为 <code>1000.01</code> 只有两位小数位 <code>.01</code>，按照下面方法计算可得 <code>0.25</code>：</p>
+<p>$$<br>0 \times 2^{-1} + 1 \times 2^{-2}   = 0.25<br>$$</p>
+<p>整数位 1000 转十进制，和小数位计算方式一样，只是指数从负数换成整数就好了，最终结果是 <code>8</code>，把 <strong>小数位</strong> 和 **整数位 **结果加到一起就是最终结果了 <code>8.25</code> 了</p>
+<p>$$<br>0 \times 2^{1} + 0 \times 2^{2} + 0 \times 2^{3} + 1 \times 2^{4}  = 8<br>$$</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>js</code> 中数字存入内存的步骤：</p>
+<ul>
+<li>分别把整数位、小数位<strong>转二进制</strong></li>
+<li>使用二进制科学计数法表示</li>
+<li>按照双精度浮点法存入<strong>符号位</strong>、<strong>指数位</strong>、<strong>尾数位</strong></li>
+</ul>
+<p>数字从内存中步骤：</p>
+<ul>
+<li>按照公式，替换<strong>符号</strong>、<strong>指数</strong>、<strong>尾数</strong></li>
+<li>得到的结果转十进制</li>
+</ul>
+<h2 id="扩展为什么-0-1-0-2-0-3"><a href="#扩展为什么-0-1-0-2-0-3" class="headerlink" title="扩展为什么 0.1 + 0.2 !== 0.3"></a>扩展为什么 0.1 + 0.2 !== 0.3</h2><p>从上文我们知道了一个数是如何存储的，那我们按照上面的方式模拟一下 0.1 + 0.2 的过程：</p>
+<p>0.1 转换为二进制为 0.0001100110011(0011 循环)，因为尾数只能存储 52 位，没办法，就把 52 位以后截取掉了，实际存入结果为：</p>
+<p><img src="/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/image-20220623220709116.png" alt="demo1 png"></p>
+<p>0.2 同理，也是循环二进制，存储结果为：</p>
+<p><img src="/2022/06/22/js%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E5%AD%97%E7%9A%84/image-20220623221005089.png" alt="demo2 png"></p>
+<p>按照上面的方法分别转回十进制可得：</p>
+<p><strong>0.1 为 0.100000001490116119384765625</strong></p>
+<p><strong>0.2 为 0.20000000298023223876953125</strong></p>
+<p>相加结果为 <code>0.30000000447034836</code>，原因就是在二进制中都只能精准表示 2 除尽的数字 1/2, 1/4, 1/8，当无法精准表示时，会舍弃存储。就好比，十进制的世界中，1/3，是 0.33333… 是无限循环的，如果人的理解也像计算机一样，是按照固定长度去表示的话，那是无法精准表示的一样。</p>
+
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%BA%95%E5%B1%82/" rel="tag">计算机底层</a>  -->
+  <!-- 2022年6月22日 -->
+  <a class="classtest-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%BA%95%E5%B1%82/" rel="tag">计算机底层</a> · 2022年6月22日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>

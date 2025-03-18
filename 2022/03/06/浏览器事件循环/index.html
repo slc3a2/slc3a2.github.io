@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Minima -->
+  <!-- Hexo theme created by @adisaktijrs -->
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+
+  
+  <title>浏览器事件循环</title>
+  
+  <link rel="canonical" href="https://slc3a2.github.io/2022/03/06/%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">
+  
+  <meta name="description" content="为什么要总结这个问题这几天和我的同事聊到这个问题，他提出了一些深入的问题，想了想，我也有相同的疑问。真是验证了那句话，了解的越多就发现自己了解的越少！so 被迫研究了下这个问题总结起来。便于以后查看和补充。 单线程和事件循环因为多线程会产生共享资源，修改彼此，等复杂问题。并且早期 js 只是来显示简">
+  
+  
+  <meta name="author" content="slc3a2">
+  
+  <meta property="og:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta property="og:site_name" content="slc3a2&#39;s blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="浏览器事件循环" />
+  
+  <meta property="og:description" content="为什么要总结这个问题这几天和我的同事聊到这个问题，他提出了一些深入的问题，想了想，我也有相同的疑问。真是验证了那句话，了解的越多就发现自己了解的越少！so 被迫研究了下这个问题总结起来。便于以后查看和补充。 单线程和事件循环因为多线程会产生共享资源，修改彼此，等复杂问题。并且早期 js 只是来显示简">
+  
+  <meta property="og:url" content="https://slc3a2.github.io/2022/03/06/%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="浏览器事件循环">
+  
+  <meta name="twitter:description" content="为什么要总结这个问题这几天和我的同事聊到这个问题，他提出了一些深入的问题，想了想，我也有相同的疑问。真是验证了那句话，了解的越多就发现自己了解的越少！so 被迫研究了下这个问题总结起来。便于以后查看和补充。 单线程和事件循环因为多线程会产生共享资源，修改彼此，等复杂问题。并且早期 js 只是来显示简">
+  
+  
+  <meta name="twitter:image" content="https://slc3a2.github.ioundefined">
+  
+  <meta name="twitter:url" content="https://slc3a2.github.io/2022/03/06/%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" />
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Preload fonts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="preload" href="../fonts/dm-serif-display-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-v2-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+<link rel="stylesheet" href="/css/normalize.css">
+
+  
+<link rel="stylesheet" href="/css/skeleton.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+<link rel="stylesheet" href="/css/prism-dark.css">
+
+  
+<link rel="stylesheet" href="/css/prism-line-numbers.css">
+
+  <!-- User css -->
+  
+  
+<link rel="stylesheet" href="/css/user.css">
+
+  
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+  <!-- Custom Theme Color Style
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <style>
+  a:not(.icon) {
+    text-decoration-color: #0FA0CE;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      #0FA0CE 50%
+    );
+  }
+  blockquote {
+    border-left: 8px solid #0FA0CE;
+  }
+  .nanobar .bar {
+    background: #0FA0CE;
+  }
+  .button.button-primary:hover,
+  button.button-primary:hover,
+  input[type="submit"].button-primary:hover,
+  input[type="reset"].button-primary:hover,
+  input[type="button"].button-primary:hover,
+  .button.button-primary:focus,
+  button.button-primary:focus,
+  input[type="submit"].button-primary:focus,
+  input[type="reset"].button-primary:focus,
+  input[type="button"].button-primary:focus {
+    background-color: #0FA0CE;
+    border-color: #0FA0CE;
+  }
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border: 1px solid #0FA0CE;
+  }
+</style>
+
+  <!-- Google Analytics (With Privacy Settings On)
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-52Y2B2P1QW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-52Y2B2P1QW');
+  </script>
+
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div>
+
+        <div class="row">
+  <div class="two columns" style="max-width: 50px">
+    <h1 class="mt-2 mode">
+      <div onclick=setDarkMode(true) id="darkBtn">🌚</div>
+      <div onclick=setDarkMode(false) id="lightBtn" class=hidden>🌝</div>
+      <script >
+        if (localStorage.getItem('preferredTheme') == 'dark') {
+          setDarkMode(true)
+        }
+        function setDarkMode(isDark) {
+          var darkBtn = document.getElementById('darkBtn')
+          var lightBtn = document.getElementById('lightBtn')
+          if (isDark) {
+            lightBtn.style.display = "block"
+            darkBtn.style.display = "none"
+            localStorage.setItem('preferredTheme', 'dark');
+          } else {
+            lightBtn.style.display = "none"
+            darkBtn.style.display = "block"
+            localStorage.removeItem('preferredTheme');
+          }
+          document.body.classList.toggle("darkmode");
+        }
+      </script>
+    </h1>
+  </div>
+
+  <div class="six columns ml-1">
+    <h1 class="mt-2">
+      ⬅ Click Here
+    </h1>
+  </div>
+
+  <div class="twelve columns">
+    <div class="row">
+      <div class="nine columns left">
+        <a href="/">Home</a>
+        
+          
+          <a href="/application" class="ml">Application</a>
+          
+        
+          
+          <a href="/sponsor" class="ml">Sponsor</a>
+          
+        
+        
+          
+            <a href="mailto:slc3a2@gmail.com" target="_blank" class="ml">Email</a>
+          
+        
+      </div>
+    </div>
+    <hr style="margin-bottom: 2.6rem">
+  </div>
+</div>
+
+        <div class="trans">
+          <h1>浏览器事件循环</h1>
+
+ 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <h2 id="为什么要总结这个问题"><a href="#为什么要总结这个问题" class="headerlink" title="为什么要总结这个问题"></a>为什么要总结这个问题</h2><p>这几天和我的同事聊到这个问题，他提出了一些深入的问题，想了想，我也有相同的疑问。真是验证了那句话，了解的越多就发现自己了解的越少！so 被迫研究了下这个问题总结起来。便于以后查看和补充。</p>
+<h2 id="单线程和事件循环"><a href="#单线程和事件循环" class="headerlink" title="单线程和事件循环"></a>单线程和事件循环</h2><p>因为多线程会产生共享资源，修改彼此，等复杂问题。并且早期 <code>js</code> 只是来显示简单页面的，但今非昔比，或许 <code>js</code> 作者可能都没想到现在的 <code>js</code> 发展的如此迅猛！所以单线程更适合 <code>js</code> ，一直延续至今。那问题来了，只有单线程是如何处理耗时任务且实现不阻塞的呢，这里就用到了事件循环。<strong>事件循环(event loop)<strong>是一种计算机系统运行机制。作为单线程的 <code>js</code> 来说，事件循环是来</strong>解决当执行耗时任务时不阻塞主线程的调度机制</strong>。<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-tw/%E4%BA%8B%E4%BB%B6%E7%8E%AF">来自维基百科的解释</a></p>
+<h2 id="事件循环工作流程"><a href="#事件循环工作流程" class="headerlink" title="事件循环工作流程"></a>事件循环工作流程</h2><blockquote>
+<p>以当前最新版 chrome_v98.0 浏览器为准</p>
+</blockquote>
+<p><code>js</code> 中的任务可分为</p>
+<ul>
+<li><strong>同步任务</strong></li>
+<li><strong>异步任务</strong></li>
+</ul>
+<p>打开一个 tab 页面，浏览器会新开辟一个进程。包含执行栈( <code>js</code> 主执行线程)和一些其他线程(属于浏览器)。当一个包含 css， <code>js</code> 的 html 页面被加载时，会从上往下，从左到右<strong>按顺序</strong>解析。当遇到同步任务时，它的执行上下文会被放入执行栈，执行完毕后，出栈。下一个放入，依次执行。</p>
+<p>当遇到耗时(异步)任务，会根据不同的任务类型，提供给专门的线程来处理，举出一些例子，不限于这些：</p>
+<ul>
+<li>setInterval / setTimeout… ⇒ <strong>timer 线程</strong></li>
+<li>网络请求 ⇒ <strong>网络请求线程</strong></li>
+<li>dom 绘制渲染 ⇒<strong>gui 线程</strong></li>
+<li>dom 元素的事件监听 ⇒ <strong>事件线程</strong></li>
+</ul>
+<p>等到这些异步任务应该被执行时，比如用户<strong>点击按钮</strong>、<strong>网络请求</strong>、<strong>延时器时间</strong>到了等，会把相应的回调函数<strong>放入异步队列</strong>中，按先后顺序排列起来待命。</p>
+<p>直到执行栈的所有同步任务执行完毕后，同步栈会从异步队列中第一位开始取出入栈，依次执行。如果每个异步队列中的任务被执行的过程中，再次产生异步任务，会被放到任务队列的最后，等待执行。</p>
+<h2 id="有一些问题"><a href="#有一些问题" class="headerlink" title="有一些问题"></a>有一些问题</h2><p>这些专门线程处理一些任务时候，拿到结果后，都按照先后顺序放入队列被执行，没有办法<strong>控制任务优先级</strong>，希望一些任务不在队列最末尾排队，而是直接插队执行。为了解决这个问题，在异步任务队列中再细分成两种类型，<strong>微任务</strong>和<strong>宏任务</strong>，微任务可以理解是插队的任务，优先级更高。根据类型的不同会被放入不同的队列：</p>
+<ul>
+<li>微任务队列 : <strong>promise</strong>、 <strong>queueMicroTask</strong>、 <strong>mutationObserver</strong></li>
+<li>宏任务队列 : <strong>setTimeout</strong>、 <strong>setInterval</strong>、 <strong>requestAnimationFrame</strong>等</li>
+</ul>
+<p>按照先微再宏的顺序执行：每一个宏任务开始前，都先要把上一个宏任务产生的微任务执行完毕再开始新的宏任务，微任务是宏任务的一部分，换句话来说，就是当<strong>执行栈空了</strong>之后，<strong>先检查微任务队列</strong>，<strong>再检查宏任务队列</strong>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/2022/03/06/%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/WechatIMG13.png" alt="image-20220306115359466"></p>
+<p>更通熟易懂事件循环动画参考 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1K4411D7Jb">B 站</a></p>
+<h2 id="存在的疑问"><a href="#存在的疑问" class="headerlink" title="存在的疑问"></a>存在的疑问</h2><ul>
+<li>在分配宏/微任务时有总的调度系统分配？还是一句代码执行过程中有一次机会，让每个线程依次检查一下，把自己任务拿走</li>
+<li>每个宏任务都有属于自己的微任务队列，还是一共只有一条微任务队列？<ul>
+<li>回答：node 端的执行规律是一个宏任务队列搭配一个微任务队列，而浏览器是一个单独的宏任务搭配一个微任务队列。但是在 node11 之后，node 和浏览器的规律趋同。</li>
+</ul>
+</li>
+<li>如何区分微任务和宏任务的呢，具体是通过哪些特征分类的？</li>
+</ul>
+<h2 id="最后整一道经典面试题"><a href="#最后整一道经典面试题" class="headerlink" title="最后整一道经典面试题"></a><strong>最后整一道经典面试题</strong></h2><blockquote>
+<p>基于 chrome_v98.0 浏览器环境</p>
+</blockquote>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">async1</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"async1 start"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">await</span> <span class="token function">async2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"async1 end"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">async2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"async2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"script start"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"setTimeout"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">async1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">resolve</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"promise1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"promise2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"script end"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>解析：按照从上往下顺序先执行同步代码，前两个函数<strong>async</strong>和<strong>async2</strong>是函数声明，忽略。然后第 1 个输出的是<strong>script start</strong>，然后看到<strong>setTimeout</strong>, 由于它是异步且属于宏任务，放到最后执行。然后看到 async1 函数被执行了，进入<strong>async1</strong>函数体。</p>
+<p>第 2 个输出的是<strong>async1 start</strong>, 看到 await 规则是：await 右的语句被同步执行，所以第 3 个输出的是<strong>async2</strong>，await 下的语句(函数体内)被当作 async 函数返回一个 promsise 的回调函数体的语句去处理，且被放入了异步任务队列中，等待中。</p>
+<p>然后跳出 async1 函数体，继续执行同步代码，遇到 new Promise，第 4 次输出<strong>promise</strong>，看到 resolve，就把 then 中回调，放入任务队列中，然后继续向下执行同步代码，第 5 次输出的最后的<strong>script end</strong>。</p>
+<p>至此同步执行栈空了，开始把任务队列中的上下文拿到执行栈执行，由于队列先进先出，所以第一个被入栈的是 async1 的回调，也就是第 6 次输出的是<strong>async1 end</strong>，然后把第二个队列中的上下文放入执行栈，也就是 promise 的 resolve，所以第 7 次输出<strong>promise2</strong>，至此微任务执行完成，现在执行宏任务，也就是 timeout，所以第 8 次输出为<strong>setTimeout</strong>。</p>
+<p>最终结果</p>
+<pre class="line-numbers language-javascipt" data-language="javascipt"><code class="language-javascipt">script start
+async1 start
+async2
+promise1
+script end
+async1 end
+promise2
+setTimeout<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<p style="font-style: italic">
+  <!-- <a class="classtest-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%BA%95%E5%B1%82/" rel="tag">计算机底层</a>  -->
+  <!-- 2022年3月6日 -->
+  <a class="classtest-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%BA%95%E5%B1%82/" rel="tag">计算机底层</a> · 2022年3月6日 · 被浏览
+  <span id="busuanzi_value_page_pv">-</span> 次
+</p>
+
+
+
+
+          <div class="row mt-2">
+  
+  <div class="eight columns">
+    <p id="madewith">
+      Made with
+      <a
+        class="footer-link icon"
+        href="https://hexo.io"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noreferrer"
+        aria-label="Hexo.io"
+      >
+        <svg
+          class="hexo svg-hov"
+          width="14"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <title>Hexo.js</title>
+          <path
+            d="M12 .007L1.57 6.056V18.05L12 23.995l10.43-6.049V5.952L12 .007zm4.798 17.105l-.939.521-.939-.521V12.94H9.08v4.172l-.94.521-.938-.521V6.89l.939-.521.939.521v4.172h5.84V6.89l.94-.521.938.521v10.222z"
+          />
+        </svg>
+      </a>
+      <!-- 
+        at <a href="https://en.wikipedia.org/wiki/Earth" target="_blank" rel="noreferrer">Earth</a>.</p>
+         -->
+      <!-- <p style="font-style:italic; font-size: 14px;">
+          PV <span id="busuanzi_value_site_pv"></span>
+          UV <span id="busuanzi_value_site_uv"></span>
+        </p> -->
+    </p>
+  </div>
+
+  <!-- Sepcial thanks to https://simpleicons.org/ for the icons -->
+  <div class="four columns mb-3 posisi">
+    
+    <a
+      class="ml-0 footer-link icon"
+      href="https://github.com/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="GitHub"
+    >
+      <svg
+        class="github svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>GitHub</title>
+        <path
+          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        />
+      </svg>
+    </a>
+        
+    <a
+      class="ml-0 footer-link icon"
+      href="https://leetcode.cn/u/slc3a2"
+      target="_blank"
+      style="text-decoration: none"
+      rel="noreferrer"
+      aria-label="StackOverflow"
+    >
+      <svg
+        class="stackoverflow svg-hov"
+        width="18"
+        role="img"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Stack Overflow</title>
+        <path
+          d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"
+        />
+      </svg>
+    </a>
+    
+    <script
+      async
+      src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+    ></script>
+  </div>
+  
+</div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script src="/js/nanobar.min.js"></script>
+  <script>
+    var options = {
+      classname: 'nanobar',
+      id: 'myNanobar'
+    };
+    var nanobar = new Nanobar(options);
+    nanobar.go(30);
+    nanobar.go(76);
+    nanobar.go(100);
+  </script>
+
+</body>
+
+</html>
